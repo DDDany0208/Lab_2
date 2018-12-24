@@ -17,8 +17,10 @@ int main() {
 	int i, j;
 	int size;
 	int count = 0;
-	char *word;
+	char c;
 	char buf[MAS_SIZE];
+	bool flagWord = false;
+	bool flagVow = false;
 	ifstream in("in.txt");
 	if (!in.is_open()) {
 		cout << "Error: file is not opened" << endl;
@@ -48,24 +50,24 @@ int main() {
 
 
 	for (i = 0; i < size; ++i) {
-
 		if (!check(buf[i], sep)) {
-			if (check(buf[i], vow)) {
-				for (j = i + 1; j < size; ++j)
-					if (check(buf[j], sep)) break;
-				if (check(buf[j - 1], vow)) {
-					word = new char[j - i + 1];
-					strcpy(word, buf + i, j - i);
-					word[j - i] = '\0';
-					cout << "Word " << ++count << ": " << word << endl;
-					delete[] word;
-					i = j;
+			if (!flagWord) {
+				flagWord = true;
+				if (check(buf[i], vow)) {
+					j = i;
+					flagVow = true;
 				}
 			}
-			else {
-				for (; i < size; ++i)
-					if (check(buf[i], sep)) break;
+		}
+		else if (flagWord) {
+			if (flagVow && check(buf[i - 1], vow)) {
+				c = buf[i];
+				buf[i] = '\0';
+				cout << "Word " << ++count << ": " << buf + j << endl;
+				buf[i] = c;
 			}
+			flagWord = false;
+			flagVow = false;
 		}
 
 	}
